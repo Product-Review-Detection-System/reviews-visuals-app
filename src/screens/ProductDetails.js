@@ -47,7 +47,7 @@ const ProductDetails = ({ navigation, route }) => {
 
     useEffect(() => {
         if (completeResult) {
-            console.log("Complete result is: ", completeResult.result.reviews)
+            // console.log("Complete result is: ", completeResult.result.reviews)
 
         }
     }, [completeResult])
@@ -173,15 +173,23 @@ const ProductDetails = ({ navigation, route }) => {
                 <Text style={{ fontWeight: 'bold', fontSize: hp('3%'), color: 'black' }}>
                     Reviews of products
                 </Text>
-                {completeResult.result.reviews.map((value, index) => {
-                    return (
-                        <View style={{ marginTop: 10 }}>
-                            <Text style={{ color: 'black' }}> <Text style={{ fontWeight: 'bold' }}>
-                                {index}:</Text> {value}</Text>
-                            <Text>------------------------------------------------------</Text>
-                        </View>
-                    )
-                })}
+
+                {completeResult ?
+                    <>
+                        {completeResult.result.reviews.map((value, index) => {
+                            return (
+                                <View key={index} style={{ marginTop: 10 }}>
+                                    <Text style={{ color: 'black' }}> <Text style={{ fontWeight: 'bold' }}>
+                                        {index}:</Text> {value}</Text>
+                                    <Text>------------------------------------------------------</Text>
+                                </View>
+                            )
+                        })}
+                    </>
+                    :
+                    null
+                }
+
 
             </ScrollView>
         </View>

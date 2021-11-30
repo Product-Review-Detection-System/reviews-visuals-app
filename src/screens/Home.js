@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions } from 'react-native';
 import { Colors } from "../Styles/Color";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from 'axios';
-
+import LoadingProcess from "../components/LoadingProcess";
+import { Alert, useToast, Modal as NativeModal } from "native-base";
 
 const Home = (props) => {
 
@@ -11,77 +12,100 @@ const Home = (props) => {
 
     const [searchText, setSearchText] = useState('')
 
+    const [loading, setLoading] = useState(false)
+
     const postRequest = () => {
 
-        console.log("I am called [please waiyt")
+        setLoading(true)
 
-        axios.post('https://api057.herokuapp.com/api/v1/', {
-            web_address: URL
-        })
-            .then(function (response) {
-                console.log("Suucesss")
-                console.log(response);
-                // props.navigation.navigate('ProductDetails', {
-                //     itemIs: response
-                // })
+        if (searchText) {
+            console.log("I am called [please waiyt")
 
-                const ResquestData = JSON.stringify(response)
-                props.navigation.navigate('ProductDetails', {
-                    itemObject: ResquestData,
-                    // comingfrom: 'tasks'
-                })
+            axios.post('https://api057.herokuapp.com/api/v1/', {
+                web_address: searchText
             })
-            .catch(function (error) {
-                console.log("Failed")
-                console.log(error);
-            });
+                .then(function (response) {
+                    console.log("Suucesss")
+                    console.log(response);
+                    // props.navigation.navigate('ProductDetails', {
+                    //     itemIs: response
+                    // })
+                    setLoading(false)
+
+                    const ResquestData = JSON.stringify(response)
+                    props.navigation.navigate('ProductDetails', {
+                        itemObject: ResquestData,
+                        // comingfrom: 'tasks'
+                    })
+                })
+                .catch(function (error) {
+                    console.log("Failed")
+                    console.log(error);
+                    setLoading(false)
+                });
+        }
+        else {
+            setLoading(false)
+        }
+
 
         console.log("DOnt have run")
     }
 
     return (
-        <View>
+        <View style={styles.container}>
+
+            <Text>
+                Product URL
+            </Text>
+
+            <NativeModal isOpen={loading} onClose={() => console.log("Not close")}>
+                <LoadingProcess title='Loading' subHeading='Please wait a moment' />
+            </NativeModal>
+
             <TextInput
-                placeholder="Email"
+                placeholder="Enter Product URL"
                 style={{
                     backgroundColor: 'white',
                     padding: 10,
                     marginTop: 5,
                     marginBottom: 10,
                     width: wp('90%'),
-                    height: hp('8%'),
+                    height: hp('25%'),
                     fontSize: hp('2.3'),
                     borderRadius: 8,
                     borderWidth: 2,
-                    borderColor: '#D04F3A',
+                    borderColor: Colors.mainColor,
                     color: '#333333',
+                    alignItems: 'flex-start',
+                    textAlignVertical: 'top'
                     // 
 
                 }}
                 onChangeText={text => {
-                    // dispatch(input({ key: 'email', value: text }))
-                    // setErrors({})
-                    // dispatch(input({ key: 'error', value: null }))
-                    // setDisplayError('')
+                    // setSubmissionTitle(text)
                     setSearchText(text)
                 }}
                 value={searchText}
                 autoCapitalize='none'
-                keyboardType='email-address'
+                // keyboardType='email-address'
                 autoCorrect={false}
-                autoFocus={true}
-            // placeholderTextColor={errors.email ? '#D04F3A' : '#C0C0C0'}
-            // placeholderTextColor='#C0C0C0'
+                numberOfLines={8}
+                multiline={true}
+                maxLength={500}
+
             />
 
-            <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={() => postRequest()}
-            >
-                <Text style={styles.buttonText}>
-                    Start Detection
+
+            <TouchableOpacity onPress={() => postRequest()}
+                style={styles.ButtonStyle}>
+                <Text style={{ color: 'white', fontSize: hp('2.7%'), fontWeight: 'bold' }}>
+                    START
                 </Text>
             </TouchableOpacity>
+
+
+
         </View>
     )
 }
@@ -92,7 +116,8 @@ const styles = StyleSheet.create({
     container: {
 
         flex: 1,
-        justifyContent: 'center',
+        backgroundColor: 'white',
+        alignItems: 'center'
 
     },
     BackgroundImage: {
@@ -127,21 +152,23 @@ const styles = StyleSheet.create({
         color: Colors.Background,
         marginTop: '3%'
     },
-    buttonContainer: {
-        width: wp('90%'),
-        marginTop: hp('3%'),
-        borderRadius: hp('1.5%'),
-        borderWidth: 0,
-        backgroundColor: 'white',
+    ButtonStyle: {
+        backgroundColor: Colors.mainColor,
+        marginHorizontal: '5%',
+        height: hp('8%'),
+        marginTop: hp('5%'),
+        borderColor: 'white',
+        width: '90%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#DBC8EE'
-    },
-    buttonText: {
-        fontSize: hp('2.8%'),
-        color: Colors.Background,
-        fontFamily: 'Bungee-Regular',
+        borderRadius: 8,
+        paddingHorizontal: 15
 
+    },
+    signupText: {
+        flexDirection: 'row',
+        marginTop: (Dimensions.get('window').height) / 29,
+        marginBottom: '20%',
     },
     input: {
         backgroundColor: 'white',
