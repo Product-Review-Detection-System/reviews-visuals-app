@@ -1,5 +1,6 @@
 const Colors = {
-    mainColor: 'red'
+    mainColor: 'red',
+    secondaryBackground: 'orange'
 }
 
 export {

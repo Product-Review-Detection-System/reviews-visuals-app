@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Dimensions } from 'react-native';
 import { Colors } from "../Styles/Color";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from 'axios';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+    ProgressChart,
+    ContributionGraph,
+    StackedBarChart
+} from "react-native-chart-kit";
 
 const ProductDetails = ({ navigation, route }) => {
 
@@ -12,12 +20,16 @@ const ProductDetails = ({ navigation, route }) => {
     const [postiveReview, setPositiveReview] = useState([])
     const [negativeReview, setNegativeReview] = useState([])
     const [allReviews, setAllReviews] = useState([])
+
+    const [completeResult, setCompleteResult] = useState('')
     // console.log("Hello prodiuct is: ", JSON.stringify(itemObject))
     useEffect(() => {
         // console.log("We called it: ",JSON.parse(itemObject))
 
         const MyData = JSON.parse(itemObject)
 
+        console.log("Image is: ", MyData.data.result.itemPic)
+        setCompleteResult(MyData.data)
         // console.log("My Data", MyData.data.result.predictions)
         const mainArray = MyData.data.result.predictions
         setAllReviews(MyData.data.result.predictions)
@@ -33,58 +45,145 @@ const ProductDetails = ({ navigation, route }) => {
 
     }, [])
 
-    const GetPercentage = () => {
+    useEffect(() => {
+        if (completeResult) {
+            console.log("Complete result is: ", completeResult.result.reviews)
+
+        }
+    }, [completeResult])
+
+    const GetPercentage = (review) => {
         const total = allReviews.length
-        const myValue = 70
-        const percentageIS = (myValue*100)/total
+        const myValue = review
+        const percentageIS = (myValue * 100) / total
         return percentageIS
     }
 
 
     return (
         <View style={styles.container}>
+            <ScrollView >
+                {completeResult ?
+                    <>
+                        <Image
+                            source={{ uri: completeResult.result.itemPic }}
+                            style={{ height: 200, resizeMode: 'contain', width: 200 }}
 
-            <TouchableOpacity
-                style={styles.buttonContainer}
-            // onPress={() => navigation.navigate('Home')}
-            >
-                <Text style={styles.buttonText}>
-                    {allReviews.length}
+                        />
+                        <View>
+                            <Text style={{ fontSize: hp('3%'), textAlign: 'center', fontWeight: 'bold' }}>
+                                {completeResult.result.itemTitle}
+                            </Text>
+                        </View>
+                    </>
+                    :
+                    null
+                }
+
+                <View style={{ flexDirection: 'row', width: wp('80%'), justifyContent: 'space-between', marginTop: hp('3%') }}>
+                    <View style={{ alignItems: 'center' }}>
+                        <AnimatedCircularProgress
+                            size={100}
+                            width={10}
+                            fill={GetPercentage(postiveReview.length)}
+                            tintColor={Colors.mainColor}
+                            backgroundColor={Colors.secondaryBackground}
+                        >
+                            {
+                                () => (
+                                    <Text>
+                                        {/* {this.state.fill} */}
+                                        {postiveReview.length}
+                                    </Text>
+                                )
+                            }
+                        </AnimatedCircularProgress>
+                        <Text style={{ marginTop: 20, }}>
+                            Positve Predictions
+                        </Text>
+                    </View>
+
+                    <View style={{ alignItems: 'center' }}>
+                        <AnimatedCircularProgress
+                            size={100}
+                            width={10}
+                            fill={GetPercentage(negativeReview.length)}
+                            tintColor={Colors.mainColor}
+                            backgroundColor={Colors.secondaryBackground}
+                        >
+                            {
+                                () => (
+                                    <Text>
+                                        {/* {this.state.fill} */}
+                                        {negativeReview.length}
+                                    </Text>
+                                )
+                            }
+                        </AnimatedCircularProgress>
+                        <Text style={{ marginTop: 20 }}>
+                            Negative Predictions
+                        </Text>
+                    </View>
+                </View>
+
+
+                {allReviews.length > 0 ?
+                    <View style={{ marginTop: 10 }}>
+                        <Text style={{ fontWeight: 'bold', color: 'black' }}>Reviews Ratio</Text>
+                        <LineChart
+                            data={{
+                                labels: ["1", "2", "3", "4", "5", "6"],
+                                datasets: [
+                                    {
+                                        data: allReviews
+                                    }
+                                ]
+                            }}
+                            width={Dimensions.get("window").width} // from react-native
+                            height={220}
+                            // yAxisLabel="$"
+                            // yAxisSuffix="k"
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={{
+                                backgroundColor: "#e26a00",
+                                backgroundGradientFrom: "#fb8c00",
+                                backgroundGradientTo: "#ffa726",
+                                decimalPlaces: 2, // optional, defaults to 2dp
+                                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                style: {
+                                    borderRadius: 16
+                                },
+                                propsForDots: {
+                                    r: "6",
+                                    strokeWidth: "2",
+                                    stroke: "#ffa726"
+                                }
+                            }}
+                            bezier
+                            style={{
+                                marginVertical: 8,
+                                borderRadius: 16
+                            }}
+                        />
+                    </View>
+                    :
+                    null
+                }
+                <Text style={{ fontWeight: 'bold', fontSize: hp('3%'), color: 'black' }}>
+                    Reviews of products
                 </Text>
-            </TouchableOpacity>
+                {completeResult.result.reviews.map((value, index) => {
+                    return (
+                        <View style={{ marginTop: 10 }}>
+                            <Text style={{ color: 'black' }}> <Text style={{ fontWeight: 'bold' }}>
+                                {index}:</Text> {value}</Text>
+                            <Text>------------------------------------------------------</Text>
+                        </View>
+                    )
+                })}
 
-            <View style={{ flexDirection: 'row'}}>
-                <AnimatedCircularProgress
-                    size={100}
-                    width={10}
-                    fill={GetPercentage}
-                    tintColor="#00e0ff"
-                    backgroundColor="#3d5875">
-                    {
-                        (fill) => (
-                            <Text>
-                                {/* {this.state.fill} */}
-                                {allReviews.length}
-                            </Text>
-                        )
-                    }
-                </AnimatedCircularProgress>
-                <AnimatedCircularProgress
-                    size={100}
-                    width={10}
-                    fill={80}
-                    tintColor="#00e0ff"
-                    backgroundColor="#3d5875">
-                    {
-                        (fill) => (
-                            <Text>
-                                {/* {this.state.fill} */}
-                                {allReviews.length}
-                            </Text>
-                        )
-                    }
-                </AnimatedCircularProgress>
-            </View>
+            </ScrollView>
         </View>
     )
 }
@@ -94,8 +193,8 @@ const styles = StyleSheet.create({
     container: {
 
         flex: 1,
-        justifyContent: 'center',
-
+        alignItems: 'center',
+        backgroundColor: 'white'
     },
     BackgroundImage: {
         flex: 1,
