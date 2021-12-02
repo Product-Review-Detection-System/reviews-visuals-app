@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions, Image, ScrollView, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { Colors } from "../Styles/Color";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from 'axios';
 import LoadingProcess from "../components/LoadingProcess";
 import { Alert, useToast, Modal as NativeModal } from "native-base";
+import ProfileCard from "../components/ProfileCard";
 
 const Home = (props) => {
 
@@ -13,9 +14,10 @@ const Home = (props) => {
     const [searchText, setSearchText] = useState('')
 
     const [loading, setLoading] = useState(false)
+    const [displayError, setDisplayError] = useState('')
 
     const postRequest = () => {
-
+        setDisplayError('')
         setLoading(true)
 
         if (searchText) {
@@ -42,9 +44,11 @@ const Home = (props) => {
                     console.log("Failed")
                     console.log(error);
                     setLoading(false)
+                    setDisplayError('Something went wrong')
                 });
         }
         else {
+            setDisplayError('Please Enter URL')
             setLoading(false)
         }
 
@@ -53,60 +57,109 @@ const Home = (props) => {
     }
 
     return (
-        <View style={styles.container}>
 
-            <Text>
-                Product URL
-            </Text>
+        <KeyboardAvoidingView onPress={Keyboard.dismiss} style={styles.container}>
+            <ScrollView keyboardShouldPersistTaps='handled'>
+                <View style={{ width: wp('90%'), marginTop: hp('4%') }}>
+                    <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 20 }}>
+                        Product URL
+                    </Text>
 
-            <NativeModal isOpen={loading} onClose={() => console.log("Not close")}>
-                <LoadingProcess title='Loading' subHeading='Please wait a moment' />
-            </NativeModal>
+                    <NativeModal isOpen={loading} onClose={() => console.log("Not close")}>
+                        <LoadingProcess title='Loading' subHeading='Please wait a moment' />
+                    </NativeModal>
 
-            <TextInput
-                placeholder="Enter Product URL"
-                style={{
-                    backgroundColor: 'white',
-                    padding: 10,
-                    marginTop: 5,
-                    marginBottom: 10,
-                    width: wp('90%'),
-                    height: hp('25%'),
-                    fontSize: hp('2.3'),
-                    borderRadius: 8,
-                    borderWidth: 2,
-                    borderColor: Colors.mainColor,
-                    color: '#333333',
-                    alignItems: 'flex-start',
-                    textAlignVertical: 'top'
-                    // 
+                    <TextInput
+                        placeholder="Enter Product URL"
+                        style={{
+                            backgroundColor: 'white',
+                            padding: 10,
+                            marginTop: 5,
+                            marginBottom: 10,
+                            width: wp('90%'),
+                            height: hp('25%'),
+                            fontSize: hp('2.3'),
+                            borderRadius: 8,
+                            borderWidth: 2,
+                            borderColor: Colors.mainColor,
+                            color: '#333333',
+                            alignItems: 'flex-start',
+                            textAlignVertical: 'top'
+                            // 
 
-                }}
-                onChangeText={text => {
-                    // setSubmissionTitle(text)
-                    setSearchText(text)
-                }}
-                value={searchText}
-                autoCapitalize='none'
-                // keyboardType='email-address'
-                autoCorrect={false}
-                numberOfLines={8}
-                multiline={true}
-                maxLength={500}
+                        }}
+                        onChangeText={text => {
+                            // setSubmissionTitle(text)
+                            setDisplayError('')
+                            setSearchText(text)
+                        }}
+                        value={searchText}
+                        autoCapitalize='none'
+                        // keyboardType='email-address'
+                        autoCorrect={false}
+                        numberOfLines={8}
+                        multiline={true}
+                        maxLength={500}
 
-            />
+                    />
 
+                    {
+                        displayError ?
+                            <View style={{ marginTop: hp('2%'), alignItems: 'center' }}>
+                                <Alert w="90%" status="error">
+                                    <Alert.Icon />
+                                    {/* <Alert.Title>Login Error</Alert.Title> */}
+                                    <Text style={{ fontFamily: 'Mali-Medium' }}>
+                                        {displayError}
+                                    </Text>
+                                </Alert>
+                            </View>
+                            :
+                            null
+                    }
 
-            <TouchableOpacity onPress={() => postRequest()}
-                style={styles.ButtonStyle}>
-                <Text style={{ color: 'white', fontSize: hp('2.7%'), fontWeight: 'bold' }}>
-                    START
-                </Text>
-            </TouchableOpacity>
+                    <TouchableOpacity onPress={() => postRequest()}
+                        style={styles.ButtonStyle}>
+                        <Text style={{ color: 'white', fontSize: hp('2.7%'), fontWeight: 'bold' }}>
+                            START
+                        </Text>
+                    </TouchableOpacity>
 
+                    <View style={{ marginTop: 20, width: wp('90%') }}>
+                        <Text style={{ fontWeight: 'bold', color: 'black', fontSize: hp('3%') }}>
+                            How it work ?
+                        </Text>
+                        <Text>
+                            we are a platform in which the user can validate the product he/she wants to buy online. User can paste URL of the product to the application and hence we run AI models on the server for the resultant validation of the product on the basis of some factors i.e., Reviews, comments & ratings. User can product’s validation by means of Percentage.
+                        </Text>
+                    </View>
 
+                    <View>
+                        <Text style={{ fontWeight: 'bold', color: 'black', fontSize: hp('3%') }}>
+                            About Team
+                        </Text>
+                    </View>
+                    <View style={{ marginTop: hp('2%') }}>
+                        <ProfileCard
+                            name='Fahad Shaikh (GL)'
+                            imageURL={require('../../assets/Fahad.jpeg')}
+                            regNumber='550BCS/18-S/9'
+                        />
+                        <ProfileCard
+                            name='Hassan Zakiullah'
+                            imageURL={require('../../assets/Hassan.jpeg')}
+                            regNumber='588BCS/18-S/9'
+                        />
+                        <ProfileCard
+                            name='Hassan Parwani'
+                            imageURL={require('../../assets/Parwani.jpeg')}
+                            regNumber='560BCS/18-S/9'
+                        />
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
 
-        </View>
     )
 }
 

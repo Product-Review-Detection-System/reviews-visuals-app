@@ -71,7 +71,7 @@ const ProductDetails = ({ navigation, route }) => {
 
                         />
                         <View>
-                            <Text style={{ fontSize: hp('3%'), textAlign: 'center', fontWeight: 'bold' }}>
+                            <Text style={{ color: 'black', fontSize: hp('3%'), textAlign: 'center', fontWeight: 'bold' }}>
                                 {completeResult.result.itemTitle}
                             </Text>
                         </View>
@@ -80,13 +80,13 @@ const ProductDetails = ({ navigation, route }) => {
                     null
                 }
 
-                <View style={{ flexDirection: 'row', width: wp('80%'), justifyContent: 'space-between', marginTop: hp('3%') }}>
+                <View style={{ marginLeft: 20, flexDirection: 'row', width: wp('80%'), justifyContent: 'space-between', marginTop: hp('3%') }}>
                     <View style={{ alignItems: 'center' }}>
                         <AnimatedCircularProgress
                             size={100}
                             width={10}
                             fill={GetPercentage(postiveReview.length)}
-                            tintColor={Colors.mainColor}
+                            tintColor='green'
                             backgroundColor={Colors.secondaryBackground}
                         >
                             {
@@ -129,10 +129,10 @@ const ProductDetails = ({ navigation, route }) => {
 
                 {allReviews.length > 0 ?
                     <View style={{ marginTop: 10 }}>
-                        <Text style={{ fontWeight: 'bold', color: 'black' }}>Reviews Ratio</Text>
+                        <Text style={{ fontWeight: 'bold', color: 'black' }}>Reviews Prediction Graph</Text>
                         <LineChart
                             data={{
-                                labels: ["1", "2", "3", "4", "5", "6"],
+                                labels: ["1", "2", "3", "4", "5", "6", "7", "8"],
                                 datasets: [
                                     {
                                         data: allReviews

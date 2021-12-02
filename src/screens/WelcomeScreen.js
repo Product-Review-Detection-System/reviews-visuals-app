@@ -63,11 +63,11 @@ const renderItem = ({ item }) => {
                 <Image source={item.image}
                     style={styles.imageStyle}
                 />
-                <View style={{ marginTop: '5%', justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+                <View style={{ marginTop: '5%', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>
                         {item.text}
                     </Text>
-                    <Text style={{ marginTop: '3%', textAlign: 'center', marginHorizontal: '8%', color: 'grey' }}>
+                    <Text style={{ color: 'black', marginTop: '3%', textAlign: 'center', marginHorizontal: '8%', color: 'grey' }}>
                         {item.details}
                     </Text>
                 </View>
